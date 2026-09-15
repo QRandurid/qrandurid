@@ -40,11 +40,11 @@ button{width:100%;border:0;border-radius:12px;padding:13px;background:#f2f2f2;co
 </section>
 
 <section class="card">
-<div class="eyebrow">CARD #047</div>
+<div class="eyebrow">CARD <span id="cardId">#047</span></div>
 <div class="mission">
 <div class="muted">MISSIOON #047 · VANALINN</div>
-<div class="quote">„Mine sinna, kus Lühike jalg pole kõige lühem asi.“</div>
-<div class="muted">Vihje viib sind Vanalinna. Jaluta avalikku kohta ja kontrolli oma asukohta.</div>
+<div class="quote" id="clue">„Mine sinna, kus Lühike jalg pole kõige lühem asi.“</div>
+<div class="muted" id="missionText">Vihje viib sind Vanalinna. Jaluta avalikku kohta ja kontrolli oma asukohta.</div>
 <div id="distanceBox" class="hidden"><div class="muted">KAUGUS SIHTKOHAST</div><div id="distance" class="distance">—</div><div id="gpsStatus" class="muted"></div></div>
 <button id="gps">📍 KONTROLLI ASUKOHTA</button>
 <button class="secondary" id="demo">DEMO: UNLOCK CHEST</button>
@@ -76,6 +76,20 @@ button{width:100%;border:0;border-radius:12px;padding:13px;background:#f2f2f2;co
 </div>
 <div class="stat" style="margin-top:8px"><span>Kogutud kaardid</span><b id="cards">1 / 100</b></div>
 </section>
+
+<section class="card" style="margin-top:14px">
+<div class="eyebrow">QR CARD SYSTEM</div>
+<h2 style="margin:7px 0 6px">Iga kaart = oma missioon</h2>
+<div class="muted">Füüsilise kaardi QR viib otse selle kaardi missioonile.</div>
+<div class="mission">
+<div class="muted">CARD URL</div>
+<div id="cardUrl" style="word-break:break-all;font-weight:800;margin:7px 0">—</div>
+<div id="qrBox" style="background:#fff;border-radius:12px;width:180px;height:180px;display:grid;place-items:center;margin:12px auto"></div>
+<button id="copyUrl">KOPI URL</button>
+</div>
+<div class="muted" style="margin-top:10px">Test: <b>?card=047</b>, <b>?card=001</b>, <b>?card=048</b> või <b>?card=099</b>.</div>
+</section>
+
 </main>
 <div class="toast" id="toast"></div>
 
@@ -123,5 +137,31 @@ $('gps').onclick=()=>{
 };
 refresh();
 </script>
+
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+<script>
+const missions={
+"001":{clue:"„Leia koht, kus rohelus kohtub kivise ajalooga.“",text:"Missioon viib Kadrioru avalikku piirkonda."},
+"047":{clue:"„Mine sinna, kus Lühike jalg pole kõige lühem asi.“",text:"Vihje viib Vanalinna. Jaluta avalikku kohta ja kontrolli oma asukohta."},
+"048":{clue:"„Leia tänav, mis ärkab pärast päikeseloojangut.“",text:"Öise Tallinna testmissioon. Kasuta ainult avalikke ja turvalisi kohti."},
+"099":{clue:"„Kui linn vaikib, otsi märki, mida teised ei märka.“",text:"Salajase seeria prototüüp."}
+};
+const p=new URLSearchParams(location.search);
+const active=(p.get("card")||"047").replace(/\D/g,"").padStart(3,"0");
+const id=missions[active]?active:"047";
+document.getElementById("cardId").textContent="#"+id;
+document.getElementById("clue").textContent=missions[id].clue;
+document.getElementById("missionText").textContent=missions[id].text;
+
+const u=new URL(location.href);u.search="";u.searchParams.set("card",id);
+const cardUrl=u.toString();
+document.getElementById("cardUrl").textContent=cardUrl;
+if(window.QRCode)new QRCode(document.getElementById("qrBox"),{text:cardUrl,width:160,height:160,correctLevel:QRCode.CorrectLevel.M});
+document.getElementById("copyUrl").onclick=async()=>{
+try{await navigator.clipboard.writeText(cardUrl);toast("Kaardi URL kopeeritud ✓")}
+catch(e){toast("URL-i kopeerimine ei õnnestunud")}
+};
+</script>
+
 </body>
 </html>
