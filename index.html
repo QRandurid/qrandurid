@@ -1,123 +1,140 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="et">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>TLL//HIDDEN v0.7</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>TLL//HIDDEN</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <style>
-*{box-sizing:border-box}body{margin:0;background:#07090d;color:#f4f6f8;font-family:Arial,sans-serif}
-.wrap{max-width:900px;margin:auto;padding:16px}.top{display:flex;justify-content:space-between;align-items:center;gap:10px}
-.logo{font-size:23px;font-weight:900;letter-spacing:2px}.version{font-size:11px;color:#8e98a6;border:1px solid #303744;border-radius:999px;padding:6px 9px;margin-left:auto}
-.xp{font-size:16px;font-weight:900;background:#171c25;border:1px solid #303744;border-radius:12px;padding:9px 12px}
-.hero{margin-top:16px;padding:22px;border:1px solid #272d38;border-radius:22px;background:linear-gradient(135deg,#121925,#0c1016)}
-.kicker{color:#8e98a6;font-size:12px;letter-spacing:2px;font-weight:800}.hero h1{font-size:34px;margin:7px 0}.muted{color:#9da6b3}
-.stats{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}.stat{background:#171c25;border:1px solid #2a303b;border-radius:12px;padding:9px 12px}
-#map{height:420px;margin:16px 0;border-radius:20px;overflow:hidden;border:1px solid #2b313d}
-.places{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
-.card{padding:17px;background:#11151d;border:1px solid #282f3a;border-radius:18px}.locked{opacity:.43}
-.tag{font-size:11px;font-weight:900;letter-spacing:1.5px}.rare{color:#63b5ff}.epic{color:#c080ff}.legendary{color:#ffd45c}
-.card h2{font-size:21px;margin:7px 0}.distance{font-size:18px;font-weight:900;margin-top:14px}.status{font-size:13px;color:#9da6b3;margin-top:7px;line-height:1.4}
-button{width:100%;margin-top:12px;padding:14px;border:0;border-radius:13px;background:#f4f6f8;color:#07090d;font-weight:900;cursor:pointer}
-button:disabled{opacity:.45;cursor:not-allowed}.secondary{background:#202631;color:#fff;border:1px solid #353d4a}
-.overlay{position:fixed;inset:0;background:rgba(2,4,7,.9);display:none;align-items:center;justify-content:center;padding:20px;z-index:9999}.overlay.show{display:flex}
-.modal{width:min(500px,100%);text-align:center;background:#10151e;border:1px solid #3a424f;border-radius:28px;padding:35px 24px;animation:pop .55s ease;box-shadow:0 0 80px rgba(255,255,255,.08)}
-.icon{font-size:60px;animation:pulse 1s infinite}.smalltitle{font-size:12px;letter-spacing:4px;font-weight:900}.modal h2{font-size:34px;margin:12px 0}.modal .reward{font-size:22px;font-weight:900}.modal p{color:#9da6b3}
-@keyframes pop{from{opacity:0;transform:scale(.65)}to{opacity:1;transform:scale(1)}}@keyframes pulse{50%{transform:scale(1.18)}}
+*{box-sizing:border-box}body{margin:0;background:#07090d;color:#f2f4f7;font-family:Arial,Helvetica,sans-serif}
+.top{height:64px;border-bottom:1px solid #252a33;background:#0b0e13;display:flex;align-items:center;justify-content:space-between;padding:0 18px;position:sticky;top:0;z-index:1000}
+.logo{font-weight:900;letter-spacing:2px;font-size:20px}.logo span{color:#777}.stats{display:flex;gap:14px;align-items:center}.xp{font-weight:800;color:#d9ff3f}.ver{font-size:11px;color:#69717e;border:1px solid #303640;padding:5px 7px;border-radius:5px}
+.wrap{max-width:1100px;margin:auto;padding:18px}
+.hero{border:1px solid #252a33;background:linear-gradient(135deg,#0d1118,#090b10);padding:18px;border-radius:12px;margin-bottom:16px}
+.hero h1{margin:0 0 7px;font-size:28px}.hero p{margin:0;color:#89919d}
+.tabs{display:flex;gap:8px;margin-bottom:14px}.tab{border:1px solid #2c323c;background:#0d1117;color:#aab2bd;padding:10px 15px;border-radius:7px;cursor:pointer;font-weight:700}.tab.active{background:#e9ff3d;color:#080a0d;border-color:#e9ff3d}
+.panel{display:none}.panel.active{display:block}
+#map{height:430px;border:1px solid #2b313b;border-radius:10px;overflow:hidden;background:#111}
+.controls{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}.btn{border:1px solid #39414d;background:#11161d;color:#fff;padding:11px 14px;border-radius:7px;cursor:pointer;font-weight:800}.btn.primary{background:#e9ff3d;color:#080a0d;border-color:#e9ff3d}.btn:disabled{opacity:.4;cursor:not-allowed}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}.card{border:1px solid #2a3039;background:#0d1117;border-radius:10px;padding:14px;position:relative;overflow:hidden}.card.locked{opacity:.48;filter:saturate(.2)}.card .num{font-size:11px;color:#6e7784;letter-spacing:1px}.card h3{margin:8px 0 5px}.rarity{font-size:11px;font-weight:900;letter-spacing:1px}.rare{color:#63b5ff}.epic{color:#bd78ff}.legendary{color:#ffd34d}.desc{color:#8e97a3;font-size:13px;line-height:1.45}.reward{font-weight:900;color:#e9ff3d;margin-top:9px}.status{margin-top:9px;font-size:12px;color:#8f98a5}.lock{position:absolute;right:13px;top:13px;font-size:18px}
+.profile{display:grid;grid-template-columns:1fr 1fr;gap:12px}.box{border:1px solid #2a3039;background:#0d1117;border-radius:10px;padding:16px}.big{font-size:34px;font-weight:900}.muted{color:#858e9b}
+.notice{border:1px solid #303640;background:#0d1117;padding:12px;border-radius:8px;color:#9ca5b1;font-size:13px;margin-top:12px}
+#modal{position:fixed;inset:0;background:rgba(0,0,0,.78);display:none;align-items:center;justify-content:center;z-index:2000}.modalbox{width:min(420px,90vw);background:#0c1016;border:1px solid #e9ff3d;border-radius:12px;padding:25px;text-align:center;box-shadow:0 0 40px rgba(233,255,61,.12)}.modalbox .mark{font-size:42px;margin-bottom:10px}.modalbox h2{margin:0 0 8px}.modalbox p{color:#9ca5b1}.close{margin-top:14px}
+@media(max-width:650px){.profile{grid-template-columns:1fr}#map{height:360px}.hero h1{font-size:23px}}
 </style>
 </head>
 <body>
-<div class="wrap">
- <div class="top">
-  <div class="logo">TLL//HIDDEN</div><div class="version">VERSION 0.7</div><div class="xp">⚡ <span id="xp">0</span> XP</div>
- </div>
- <div class="hero">
-  <div class="kicker">CITY HUNT • TALLINN</div>
-  <h1>Unlock the city.</h1>
-  <div class="muted">Skänni kaart → mine kohale → kontrolli GPS-i → saa XP.</div>
-  <div class="stats"><div class="stat">LEVEL <b id="level">1</b></div><div class="stat">PLACES <b id="count">0/3</b></div></div>
- </div>
- <div id="map"></div>
- <div class="places" id="places"></div>
+<header class="top"><div class="logo">TLL<span>//</span>HIDDEN</div><div class="stats"><div class="xp" id="xpTop">0 XP</div><div class="ver">VERSION 0.8</div></div></header>
+
+<main class="wrap">
+<section class="hero"><h1>HIDDEN CITY. REAL REWARDS.</h1><p>Leia füüsilised kaardid, ava asukohad ja kogu XP Tallinnas.</p></section>
+
+<div class="tabs">
+<button class="tab active" onclick="showTab('mapTab',this)">🗺 KAART</button>
+<button class="tab" onclick="showTab('cardsTab',this)">🃏 MINU KAARDID</button>
+<button class="tab" onclick="showTab('profileTab',this)">👤 PROFIIL</button>
 </div>
 
-<div class="overlay" id="overlay">
- <div class="modal">
-  <div class="icon" id="modalIcon">✦</div>
-  <div class="smalltitle" id="modalTitle">NEW PLACE UNLOCKED</div>
-  <h2 id="modalPlace"></h2>
-  <div class="reward" id="modalReward"></div>
-  <p id="modalText"></p>
-  <button onclick="closeModal()">CONTINUE</button>
- </div>
+<section id="mapTab" class="panel active">
+<div id="map"></div>
+<div class="controls">
+<button class="btn primary" onclick="checkLocation()">📍 KONTROLLI OMA ASUKOHTA</button>
+<button class="btn" onclick="resetDemo()">↻ DEMO RESET</button>
 </div>
+<div class="notice" id="locationStatus">Vali kaart alt või ava füüsilise kaardi QR-kood. XP saad ainult siis, kui oled sihtkohast kuni 50 m kaugusel.</div>
+<div class="cards" id="placeCards"></div>
+</section>
+
+<section id="cardsTab" class="panel">
+<div class="box" style="margin-bottom:12px"><b>MINU KOLLEKTSIOON</b><div class="muted" style="margin-top:5px">Roheline kaart = sul on kaart olemas. Lukus kaart = veel leidmata.</div></div>
+<div class="cards" id="collection"></div>
+</section>
+
+<section id="profileTab" class="panel">
+<div class="profile">
+<div class="box"><div class="muted">XP</div><div class="big" id="xpProfile">0</div></div>
+<div class="box"><div class="muted">LEITUD KAARDID</div><div class="big" id="countProfile">0/3</div></div>
+</div>
+<div class="box" style="margin-top:12px"><b>LEVEL</b><div class="big" id="levelProfile">1</div><div class="muted">Iga 500 XP = järgmine level.</div></div>
+</section>
+</main>
+
+<div id="modal"><div class="modalbox"><div class="mark" id="modalMark">✦</div><h2 id="modalTitle"></h2><p id="modalText"></p><button class="btn primary close" onclick="closeModal()">JÄTKA</button></div></div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-const VERSION="0.7";
 const places={
- oldtown:{name:"VANALINN",rarity:"RARE",xp:100,lat:59.4370,lng:24.7453,desc:"Tallinna vanalinna ajalooline süda."},
- pirita:{name:"PIRITA RAND",rarity:"EPIC",xp:250,lat:59.4695,lng:24.8327,desc:"Mereäärne sihtkoht Pirita rannas."},
- viru:{name:"VIRU KESKUS",rarity:"LEGENDARY",xp:500,lat:59.4350,lng:24.7536,desc:"Tallinna keskne tuntud koht."}
+ oldtown:{id:'oldtown',num:'001',name:'VANALINN',rarity:'RARE',cls:'rare',xp:100,lat:59.4370,lng:24.7453,desc:'Tallinna vanalinna peidetud punkt.'},
+ pirita:{id:'pirita',num:'002',name:'PIRITA RAND',rarity:'EPIC',cls:'epic',xp:250,lat:59.4695,lng:24.8327,desc:'Ranna lähedal asuv salajane punkt.'},
+ viru:{id:'viru',num:'003',name:'VIRU KESKUS',rarity:'LEGENDARY',cls:'legendary',xp:500,lat:59.4350,lng:24.7536,desc:'Kesklinna legendaarne punkt.'}
 };
-let state=JSON.parse(localStorage.getItem("tll_hidden_v07")||'{"scanned":[],"claimed":[],"xp":0}');
-let map=L.map("map").setView([59.437,24.77],13),markers={};
-L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:"© OpenStreetMap"}).addTo(map);
+const key='tll_hidden_v08';
+let state=JSON.parse(localStorage.getItem(key)||'{"scanned":[],"claimed":[],"xp":0}');
+let activePlace=null, map, markers={};
 
-function save(){localStorage.setItem("tll_hidden_v07",JSON.stringify(state))}
-function dist(lat1,lon1,lat2,lon2){const R=6371000,r=Math.PI/180,d1=(lat2-lat1)*r,d2=(lon2-lon1)*r,a=Math.sin(d1/2)**2+Math.cos(lat1*r)*Math.cos(lat2*r)*Math.sin(d2/2)**2;return Math.round(2*R*Math.asin(Math.sqrt(a)))}
-function render(){
- xp.textContent=state.xp;level.textContent=Math.floor(state.xp/250)+1;count.textContent=state.scanned.length+"/3";
- placesEl.innerHTML="";
- Object.entries(places).forEach(([id,p])=>{
-  const scanned=state.scanned.includes(id),claimed=state.claimed.includes(id);
-  const d=document.createElement("div");d.className="card"+(scanned?"":" locked");
-  d.innerHTML=`<div class="tag ${p.rarity.toLowerCase()}">${scanned?p.rarity:"LOCKED"}</div>
-  <h2>${scanned?p.name:"??????"}</h2><div class="muted">${scanned?p.desc:"Skänni selle koha kaart."}</div>
-  ${scanned?`<div class="distance" id="distance-${id}">📍 Asukoht kontrollimata</div>
-  <div class="status" id="status-${id}">${claimed?"✓ XP JUBA KÄES":"Peab olema sihtkohast 50 m kaugusel."}</div>
-  <button class="secondary" ${claimed?"disabled":""} onclick="checkLocation('${id}')">📍 KONTROLLI OMA ASUKOHTA</button>`:""}`;
-  placesEl.appendChild(d);
-  if(scanned&&!markers[id])markers[id]=L.marker([p.lat,p.lng]).addTo(map).bindPopup("<b>"+p.name+"</b><br>"+p.rarity+" • +"+p.xp+" XP");
- });
-}
-const placesEl=document.getElementById("places");
+function save(){localStorage.setItem(key,JSON.stringify(state));updateUI()}
+function showTab(id,btn){document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));btn.classList.add('active');if(id==='mapTab'&&map)setTimeout(()=>map.invalidateSize(),100)}
+
+function openModal(title,text,mark='✦'){document.getElementById('modalTitle').textContent=title;document.getElementById('modalText').textContent=text;document.getElementById('modalMark').textContent=mark;document.getElementById('modal').style.display='flex'}
+function closeModal(){document.getElementById('modal').style.display='none'}
+
 function scanPlace(id){
- if(!places[id])return;
+ const p=places[id]; if(!p)return;
+ activePlace=id;
  if(!state.scanned.includes(id)){
-  state.scanned.push(id);save();render();
-  showModal("NEW PLACE UNLOCKED",places[id].name,places[id].rarity,"Koht on kaardil avatud. XP saad alles siis, kui jõuad kohale.", "✦");
-  setTimeout(()=>map.setView([places[id].lat,places[id].lng],15),250);
+   state.scanned.push(id); save();
+   openModal('NEW CARD UNLOCKED',p.name+' • '+p.rarity+' • +'+p.xp+' XP. Mine sihtkohta ja kontrolli oma asukohta.', '🃏');
  }
+ focusPlace(id);
 }
-function checkLocation(id){
- const p=places[id],status=document.getElementById("status-"+id),distanceEl=document.getElementById("distance-"+id);
- if(!navigator.geolocation){status.textContent="❌ GPS ei ole selles brauseris saadaval.";return}
- status.textContent="⏳ Kontrollin sinu asukohta...";
- distanceEl.textContent="📍 Asukoha leidmine...";
+
+function focusPlace(id){activePlace=id; if(map){map.setView([places[id].lat,places[id].lng],15); renderPlaces()}}
+
+function checkLocation(){
+ if(!activePlace){document.getElementById('locationStatus').textContent='Vali kõigepealt kaart.';return}
+ if(!navigator.geolocation){document.getElementById('locationStatus').textContent='Sinu brauser ei toeta asukoha määramist.';return}
+ const p=places[activePlace];
+ document.getElementById('locationStatus').textContent='📡 Kontrollin asukohta...';
  navigator.geolocation.getCurrentPosition(pos=>{
-   const d=dist(pos.coords.latitude,pos.coords.longitude,p.lat,p.lng);
-   distanceEl.textContent="📍 "+d+" m sihtkohast";
+   const d=distance(pos.coords.latitude,pos.coords.longitude,p.lat,p.lng);
+   document.getElementById('locationStatus').textContent='📍 '+Math.round(d)+' m sihtkohast — '+p.name;
    if(d<=50){
-    status.textContent="✓ Oled 50 m raadiuses!";
-    claim(id);
-   }else status.textContent="❌ Liiga kaugel. Mine veel "+(d-50)+" m lähemale.";
- },err=>{
-   distanceEl.textContent="📍 GPS-viga";
-   status.textContent="❌ Luba brauseril oma asukohta kasutada ja proovi uuesti.";
- },{enableHighAccuracy:true,timeout:15000,maximumAge:0});
+     if(!state.claimed.includes(p.id)){
+       state.claimed.push(p.id);state.xp+=p.xp;save();
+       openModal('XP REWARD UNLOCKED','+'+p.xp+' XP — '+p.name+'.', '⚡');
+     }else{
+       document.getElementById('locationStatus').textContent='✅ See reward on juba kogutud.';
+     }
+   }else{
+     document.getElementById('locationStatus').textContent+=' — liigu veel lähemale (vajalik ≤ 50 m).';
+   }
+ },err=>{document.getElementById('locationStatus').textContent='Asukohta ei saanud kätte. Kontrolli telefoni asukohaõigust.'},{enableHighAccuracy:true,timeout:15000,maximumAge:0});
 }
-function claim(id){
- if(state.claimed.includes(id))return;
- state.claimed.push(id);state.xp+=places[id].xp;save();render();
- showModal("XP REWARD UNLOCKED",places[id].name,"+"+places[id].xp+" XP","Sihtkoht kinnitatud! XP lisati sinu kontole.","⚡");
- map.setView([places[id].lat,places[id].lng],16);
+
+function distance(a,b,c,d){const R=6371000,rad=Math.PI/180,x=(c-b)*rad,y=(d-a)*rad;const q=Math.sin(x/2)**2+Math.cos(a*rad)*Math.cos(c*rad)*Math.sin(y/2)**2;return 2*R*Math.asin(Math.sqrt(q))}
+
+function cardHTML(p,collection=false){
+ const owned=state.scanned.includes(p.id), claimed=state.claimed.includes(p.id);
+ if(collection&&!owned)return `<div class="card locked"><div class="lock">🔒</div><div class="num">CARD #${p.num}</div><h3>???</h3><div class="rarity">UNKNOWN</div><p class="desc">Leia füüsiline kaart, et see kaart avada.</p><div class="status">PUUDUB</div></div>`;
+ return `<div class="card ${owned?'':'locked'}"><div class="num">CARD #${p.num}</div><h3>${owned?p.name:'???'}</h3><div class="rarity ${p.cls}">${owned?p.rarity:'LOCKED'}</div><p class="desc">${owned?p.desc:'Seda kaarti pole veel leitud.'}</p>${owned?`<div class="reward">+${p.xp} XP</div><div class="status">${claimed?'✅ REWARD CLAIMED':'🔓 KAART OLEMAS'}</div><div class="controls"><button class="btn primary" onclick="focusPlace('${p.id}')">AVA KAARDIL</button></div>`:''}</div>`;
 }
-function showModal(title,place,reward,text,icon){modalTitle.textContent=title;modalPlace.textContent=place;modalReward.textContent=reward;modalText.textContent=text;modalIcon.textContent=icon;overlay.classList.add("show")}
-function closeModal(){overlay.classList.remove("show")}
-const qs=new URLSearchParams(location.search),incoming=qs.get("place");
-render();
-if(incoming)setTimeout(()=>scanPlace(incoming.toLowerCase()),400);
+function renderPlaces(){document.getElementById('placeCards').innerHTML=Object.values(places).filter(p=>state.scanned.includes(p.id)).map(p=>cardHTML(p)).join('')||'<div class="notice">Ühtegi kaarti pole veel avatud. Skanni füüsilise kaardi QR-kood.</div>'}
+function renderCollection(){document.getElementById('collection').innerHTML=Object.values(places).map(p=>cardHTML(p,true)).join('')}
+function updateUI(){document.getElementById('xpTop').textContent=state.xp+' XP';document.getElementById('xpProfile').textContent=state.xp;document.getElementById('countProfile').textContent=state.scanned.length+'/3';document.getElementById('levelProfile').textContent=Math.floor(state.xp/500)+1;renderPlaces();renderCollection()}
+function resetDemo(){if(confirm('Kas kustutan demo progressi?')){localStorage.removeItem(key);location.reload()}}
+
+function initMap(){
+ map=L.map('map').setView([59.437,24.75],12);
+ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap'}).addTo(map);
+ Object.values(places).forEach(p=>markers[p.id]=L.marker([p.lat,p.lng]).addTo(map).bindPopup('<b>'+p.name+'</b><br>'+p.rarity+' • +'+p.xp+' XP'));
+ updateMarkers();renderPlaces();renderCollection();
+}
+function updateMarkers(){Object.values(places).forEach(p=>{if(markers[p.id])markers[p.id].setOpacity(state.scanned.includes(p.id)?1:0.35)})}
+
+const qs=new URLSearchParams(location.search);
+const incoming=qs.get('place');
+initMap();
+if(incoming&&places[incoming])setTimeout(()=>scanPlace(incoming),400);
 </script>
 </body>
 </html>
