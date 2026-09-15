@@ -1,167 +1,106 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="et">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>TLL//HIDDEN — v0.2</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TLL//HIDDEN</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <style>
-*{box-sizing:border-box}body{margin:0;background:#090b0e;color:#f5f6f7;font-family:Inter,system-ui,-apple-system,sans-serif}
-header{padding:16px 18px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #242830;position:sticky;top:0;background:#090b0eee;backdrop-filter:blur(12px);z-index:20}
-.logo{font-weight:950;letter-spacing:2px}.pill{border:1px solid #363c46;border-radius:999px;padding:7px 11px;font-size:11px;color:#aeb5c0}
-main{max-width:980px;margin:auto;padding:18px}.hero{padding:18px 0 12px}.eyebrow{color:#737c8b;font-size:11px;letter-spacing:2.2px;font-weight:800}.hero h1{font-size:40px;line-height:1;margin:8px 0 12px}.hero p{color:#aeb4bf;max-width:680px;margin:0}
-.grid{display:grid;grid-template-columns:1.25fr .75fr;gap:14px}.card{background:#111419;border:1px solid #272d36;border-radius:18px;padding:16px}
-.map{height:350px;border-radius:14px;overflow:hidden;background:#151920}.leaflet-container{background:#111419}.leaflet-control-zoom a{background:#111419!important;color:#fff!important;border-color:#333!important}
-.stat{display:flex;justify-content:space-between;padding:11px 0;border-bottom:1px solid #252a31}.stat:last-child{border-bottom:0}.mission{margin-top:13px;padding:15px;border:1px solid #343b46;border-radius:14px}
-.quote{font-size:20px;font-weight:800;line-height:1.25;margin:11px 0}.muted{color:#858e9b;font-size:13px;line-height:1.45}
-button{width:100%;border:0;border-radius:12px;padding:13px;background:#f2f2f2;color:#090b0e;font-weight:900;cursor:pointer;margin-top:10px}.secondary{background:#20252d;color:#fff}.success{background:#dfffdc;color:#0b1a0a}
-.rarity{font-weight:950}.common{color:#b8bec8}.rare{color:#55a9ff}.epic{color:#b878ff}.legendary{color:#ffbf55}.boss{color:#ff647c}
-.hidden{display:none}.reward{font-size:24px;text-align:center;padding:17px}.bar{height:8px;background:#252b33;border-radius:99px;overflow:hidden}.bar i{display:block;width:8%;height:100%;background:#fff;transition:width .4s}
-.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0}.tab{padding:11px;text-align:center;border:1px solid #2d333c;border-radius:11px;color:#9ea6b2;font-weight:800}.tab.active{background:#e9e9e9;color:#0a0c0f}
-.inventory{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.item{border:1px solid #2a3039;border-radius:12px;padding:12px;background:#0d1014}.item b{display:block;margin-top:4px}
-.profile{display:flex;gap:13px;align-items:center}.avatar{width:52px;height:52px;border-radius:14px;border:1px solid #3b424d;display:grid;place-items:center;font-size:24px;background:#171b21}
-.distance{font-size:30px;font-weight:950;margin:8px 0}.ok{border-color:#7dff78}.warn{border-color:#ffcf66}
-.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#f2f2f2;color:#0b0d10;padding:12px 16px;border-radius:12px;font-weight:850;display:none;z-index:50;white-space:nowrap}
-@media(max-width:720px){.grid{grid-template-columns:1fr}.hero h1{font-size:34px}.map{height:290px}.inventory{grid-template-columns:1fr 1fr}}
+*{box-sizing:border-box}body{margin:0;background:#090b10;color:#f4f6f8;font-family:Arial,sans-serif}
+.wrap{max-width:900px;margin:auto;padding:18px}.top{display:flex;justify-content:space-between;align-items:center}
+.logo{font-weight:900;letter-spacing:2px;font-size:24px}.xp{font-weight:800}
+.hero{margin:18px 0;padding:24px;border:1px solid #252a35;border-radius:22px;background:linear-gradient(135deg,#111722,#0d1017)}
+h1{margin:0 0 8px;font-size:34px}.muted{color:#9da6b3}.stats{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.stat{background:#171c25;border:1px solid #2a303b;padding:10px 14px;border-radius:12px}
+#map{height:420px;border-radius:20px;margin:18px 0;border:1px solid #292f3a;overflow:hidden}
+.places{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.place{padding:16px;border-radius:18px;background:#11151d;border:1px solid #272d38}
+.place.locked{opacity:.45}.place h3{margin:0 0 7px}.tag{font-size:12px;font-weight:900;letter-spacing:1px}.rare{color:#64b5ff}.epic{color:#c184ff}.legendary{color:#ffd35a}
+button{width:100%;padding:14px;border:0;border-radius:13px;background:#f4f6f8;color:#090b10;font-weight:900;cursor:pointer;margin-top:10px}
+.overlay{position:fixed;inset:0;background:rgba(4,6,10,.88);display:none;align-items:center;justify-content:center;z-index:9999;padding:24px}
+.overlay.show{display:flex}.unlock{max-width:520px;width:100%;text-align:center;padding:35px 25px;border-radius:28px;background:#10151e;border:1px solid #39404c;box-shadow:0 0 70px rgba(255,255,255,.08);animation:pop .55s ease}
+.big{font-size:55px;animation:pulse 1.1s infinite}.new{font-size:13px;letter-spacing:4px;font-weight:900;margin-top:8px}.placeName{font-size:36px;font-weight:900;margin:12px 0}.reward{font-size:20px;font-weight:900}
+@keyframes pop{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}@keyframes pulse{50%{transform:scale(1.18)}}
+.legend{font-size:13px;color:#9da6b3;margin-top:8px}
 </style>
 </head>
 <body>
-<header><div class="logo">TLL//HIDDEN</div><div class="pill">PROTOTYPE v0.2</div></header>
-<main>
-<section class="hero"><div class="eyebrow">REAL CITY / SECRET MISSIONS</div><h1>AVASTA TALLINN.</h1><p>Füüsiline kaart on võti. QR avab missiooni. Leia koht päriselus ja ava chest.</p></section>
-
-<div class="grid">
-<section class="card">
-<div class="eyebrow">TALLINN // <span id="pct">8</span>%</div>
-<div id="map" class="map"></div>
-<div class="stat"><span>Avatud alad</span><b><span id="zones">8</span> / 100</b></div>
-<div class="stat"><span>XP</span><b><span id="xp">120</span> / 1000</b></div>
-<div class="bar"><i id="xpbar"></i></div>
-</section>
-
-<section class="card">
-<div class="eyebrow">CARD <span id="cardId">#047</span></div>
-<div class="mission">
-<div class="muted">MISSIOON #047 · VANALINN</div>
-<div class="quote" id="clue">„Mine sinna, kus Lühike jalg pole kõige lühem asi.“</div>
-<div class="muted" id="missionText">Vihje viib sind Vanalinna. Jaluta avalikku kohta ja kontrolli oma asukohta.</div>
-<div id="distanceBox" class="hidden"><div class="muted">KAUGUS SIHTKOHAST</div><div id="distance" class="distance">—</div><div id="gpsStatus" class="muted"></div></div>
-<button id="gps">📍 KONTROLLI ASUKOHTA</button>
-<button class="secondary" id="demo">DEMO: UNLOCK CHEST</button>
+<div class="wrap">
+ <div class="top"><div class="logo">TLL//HIDDEN</div><div class="xp" id="xp">0 XP</div></div>
+ <div class="hero">
+  <div class="muted">CITY HUNT • TALLINN</div>
+  <h1>Unlock the city.</h1>
+  <div class="muted">Skanni füüsilise kaardi QR-kood. Uus koht avaneb sinu kaardil.</div>
+  <div class="stats">
+   <div class="stat">LEVEL <b id="level">1</b></div>
+   <div class="stat">UNLOCKED <b id="count">0/3</b></div>
+  </div>
+ </div>
+ <div id="map"></div>
+ <div class="places" id="places"></div>
 </div>
 
-<div id="reward" class="mission hidden">
-<div class="eyebrow">CHEST UNLOCKED</div>
-<div class="reward">🔓<br><span class="rarity rare">RARE</span><br><b>VANALINNA BADGE</b></div>
-<div class="muted">+100 XP · Lisatud inventory'sse.</div>
+<div class="overlay" id="overlay">
+ <div class="unlock">
+  <div class="big">✦</div>
+  <div class="new">NEW PLACE UNLOCKED</div>
+  <div class="placeName" id="unlockName"></div>
+  <div class="reward" id="unlockReward"></div>
+  <div class="legend" id="unlockText"></div>
+  <button onclick="closeUnlock()">VIEW ON MAP</button>
+ </div>
 </div>
-</section>
-</div>
-
-<div class="tabs">
-<div class="tab active">PROFILE</div><div class="tab">CARDS</div><div class="tab">INVENTORY</div>
-</div>
-
-<section class="card">
-<div class="profile"><div class="avatar">👤</div><div><div class="eyebrow">PLAYER</div><b id="player">TALLINN RUNNER</b><div class="muted">LEVEL <span id="level">2</span> · <span id="xp2">120</span> XP</div></div></div>
-</section>
-
-<section class="card" style="margin-top:14px">
-<div class="eyebrow">INVENTORY</div>
-<div class="inventory" style="margin-top:10px">
-<div class="item">🏙️ <span class="rarity rare">RARE</span><b>Vanalinn Badge</b></div>
-<div class="item">🗺️ <span class="rarity common">COMMON</span><b>Tallinn #047</b></div>
-<div class="item">🏷️ <span class="rarity epic">EPIC</span><b>Night Hunter</b></div>
-<div class="item">🔒 <span class="rarity legendary">LEGENDARY</span><b>???</b></div>
-</div>
-<div class="stat" style="margin-top:8px"><span>Kogutud kaardid</span><b id="cards">1 / 100</b></div>
-</section>
-
-<section class="card" style="margin-top:14px">
-<div class="eyebrow">QR CARD SYSTEM</div>
-<h2 style="margin:7px 0 6px">Iga kaart = oma missioon</h2>
-<div class="muted">Füüsilise kaardi QR viib otse selle kaardi missioonile.</div>
-<div class="mission">
-<div class="muted">CARD URL</div>
-<div id="cardUrl" style="word-break:break-all;font-weight:800;margin:7px 0">—</div>
-<div id="qrBox" style="background:#fff;border-radius:12px;width:180px;height:180px;display:grid;place-items:center;margin:12px auto"></div>
-<button id="copyUrl">KOPI URL</button>
-</div>
-<div class="muted" style="margin-top:10px">Test: <b>?card=047</b>, <b>?card=001</b>, <b>?card=048</b> või <b>?card=099</b>.</div>
-</section>
-
-</main>
-<div class="toast" id="toast"></div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-const target={lat:59.4372,lng:24.7453}; // Tallinn Town Hall area — public landmark
-const R=6371000;
-let state=JSON.parse(localStorage.getItem('tllhidden_v02')||'{"xp":120,"unlocked":false}');
-const $=id=>document.getElementById(id);
-function toast(t){$('toast').textContent=t;$('toast').style.display='block';clearTimeout(window.tt);window.tt=setTimeout(()=>$('toast').style.display='none',2400)}
-function save(){localStorage.setItem('tllhidden_v02',JSON.stringify(state))}
-function refresh(){
- $('xp').textContent=state.xp;$('xp2').textContent=state.xp;$('level').textContent=Math.max(1,Math.floor(state.xp/100)+1);
- $('xpbar').style.width=Math.min(100,state.xp/10)+'%';
- $('zones').textContent=state.unlocked?9:8;$('pct').textContent=state.unlocked?9:8;
- if(state.unlocked)$('reward').classList.remove('hidden');
-}
-function distance(a,b){
- const dLat=(b.lat-a.lat)*Math.PI/180,dLng=(b.lng-a.lng)*Math.PI/180;
- const x=Math.sin(dLat/2)**2+Math.cos(a.lat*Math.PI/180)*Math.cos(b.lat*Math.PI/180)*Math.sin(dLng/2)**2;
- return 2*R*Math.asin(Math.sqrt(x));
-}
-function unlock(){
- if(!state.unlocked){state.unlocked=true;state.xp+=100;save();refresh()}
- $('reward').classList.remove('hidden');toast('CHEST UNLOCKED 🔓 +100 XP');
-}
-const map=L.map('map',{zoomControl:true}).setView([59.4372,24.7453],14);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap contributors'}).addTo(map);
-L.circle([59.4372,24.7453],{radius:80,color:'#fff',fillOpacity:.08}).addTo(map).bindTooltip('CHEST ZONE #047');
-L.marker([59.4372,24.7453]).addTo(map).bindPopup('<b>MISSION #047</b><br>Vanalinna chest zone');
-L.circle([59.4387,24.7385],{radius:180,color:'#777',fillOpacity:.05,dashArray:'6 7'}).addTo(map).bindTooltip('KALAMAJA — LOCKED');
-L.circle([59.4326,24.7503],{radius:180,color:'#777',fillOpacity:.05,dashArray:'6 7'}).addTo(map).bindTooltip('KESKLINN — LOCKED');
-
-$('demo').onclick=unlock;
-$('gps').onclick=()=>{
- if(!navigator.geolocation){toast('Brauser ei toeta GPS-i.');return}
- $('distanceBox').classList.remove('hidden');$('gpsStatus').textContent='Ootan GPS-i…';$('distance').textContent='…';toast('Kontrollin asukohta…');
- navigator.geolocation.getCurrentPosition(p=>{
-   const d=distance({lat:p.coords.latitude,lng:p.coords.longitude},target);
-   $('distance').textContent=Math.round(d)+' m';
-   if(d<=80){$('gpsStatus').textContent='OLED CHEST ZONE\'IS ✓';$('distanceBox').classList.add('ok');unlock()}
-   else {$('gpsStatus').textContent='Liigu sihtkohale lähemale. Kontrolli avalikus ja turvalises kohas.';$('distanceBox').classList.add('warn');toast('Veel '+Math.round(d-80)+' m minna.')}
- },e=>{ $('gpsStatus').textContent='GPS ei õnnestunud. Kontrolli brauseri asukohaluba.';toast('GPS-i ei saanud kasutada.') },
- {enableHighAccuracy:true,timeout:10000,maximumAge:5000});
+const places={
+ oldtown:{name:"VANALINN",rarity:"RARE",xp:100,lat:59.4370,lng:24.7453,desc:"Tallinna vanalinna ajalooline süda."},
+ pirita:{name:"PIRITA RAND",rarity:"EPIC",xp:250,lat:59.4695,lng:24.8327,desc:"Mereäärne koht Pirita rannas."},
+ viru:{name:"VIRU KESKUS",rarity:"LEGENDARY",xp:500,lat:59.4350,lng:24.7536,desc:"Üks Tallinna kõige tuntumaid keskseid kohti."}
 };
-refresh();
+const params=new URLSearchParams(location.search);
+const incoming=params.get("place");
+let unlocked=JSON.parse(localStorage.getItem("tll_unlocked")||"[]");
+let totalXP=Number(localStorage.getItem("tll_xp")||0);
+
+const map=L.map("map").setView([59.437,24.753],13);
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{attribution:"© OpenStreetMap"}).addTo(map);
+const markers={};
+
+function render(){
+ document.getElementById("xp").textContent=totalXP+" XP";
+ document.getElementById("level").textContent=Math.floor(totalXP/250)+1;
+ document.getElementById("count").textContent=unlocked.length+"/3";
+ const box=document.getElementById("places"); box.innerHTML="";
+ Object.entries(places).forEach(([id,p])=>{
+   const on=unlocked.includes(id);
+   const d=document.createElement("div"); d.className="place"+(on?"":" locked");
+   d.innerHTML=`<div class="tag ${p.rarity.toLowerCase()}">${on?p.rarity:"LOCKED"}</div>
+   <h3>${on?p.name:"??????"}</h3><div class="muted">${on?p.desc:"Skanni kaart, et avada."}</div>
+   ${on?`<div style="margin-top:12px"><b>+${p.xp} XP</b></div>`:""}`;
+   box.appendChild(d);
+   if(on && !markers[id]) markers[id]=L.marker([p.lat,p.lng]).addTo(map).bindPopup("<b>"+p.name+"</b><br>"+p.rarity+" • +"+p.xp+" XP");
+ });
+}
+function unlock(id){
+ if(!places[id]) return;
+ if(!unlocked.includes(id)){
+   unlocked.push(id); totalXP+=places[id].xp;
+   localStorage.setItem("tll_unlocked",JSON.stringify(unlocked));
+   localStorage.setItem("tll_xp",totalXP);
+   document.getElementById("unlockName").textContent=places[id].name;
+   document.getElementById("unlockReward").textContent=places[id].rarity+"  •  +"+places[id].xp+" XP";
+   document.getElementById("unlockText").textContent="Koht on nüüd sinu kaardil avatud.";
+   document.getElementById("overlay").classList.add("show");
+   render();
+   setTimeout(()=>{map.setView([places[id].lat,places[id].lng],15);},500);
+ } else {
+   map.setView([places[id].lat,places[id].lng],15);
+ }
+}
+function closeUnlock(){document.getElementById("overlay").classList.remove("show");}
+render();
+if(incoming) setTimeout(()=>unlock(incoming.toLowerCase()),350);
 </script>
-
-<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
-<script>
-const missions={
-"001":{clue:"„Leia koht, kus rohelus kohtub kivise ajalooga.“",text:"Missioon viib Kadrioru avalikku piirkonda."},
-"047":{clue:"„Mine sinna, kus Lühike jalg pole kõige lühem asi.“",text:"Vihje viib Vanalinna. Jaluta avalikku kohta ja kontrolli oma asukohta."},
-"048":{clue:"„Leia tänav, mis ärkab pärast päikeseloojangut.“",text:"Öise Tallinna testmissioon. Kasuta ainult avalikke ja turvalisi kohti."},
-"099":{clue:"„Kui linn vaikib, otsi märki, mida teised ei märka.“",text:"Salajase seeria prototüüp."}
-};
-const p=new URLSearchParams(location.search);
-const active=(p.get("card")||"047").replace(/\D/g,"").padStart(3,"0");
-const id=missions[active]?active:"047";
-document.getElementById("cardId").textContent="#"+id;
-document.getElementById("clue").textContent=missions[id].clue;
-document.getElementById("missionText").textContent=missions[id].text;
-
-const u=new URL(location.href);u.search="";u.searchParams.set("card",id);
-const cardUrl=u.toString();
-document.getElementById("cardUrl").textContent=cardUrl;
-if(window.QRCode)new QRCode(document.getElementById("qrBox"),{text:cardUrl,width:160,height:160,correctLevel:QRCode.CorrectLevel.M});
-document.getElementById("copyUrl").onclick=async()=>{
-try{await navigator.clipboard.writeText(cardUrl);toast("Kaardi URL kopeeritud ✓")}
-catch(e){toast("URL-i kopeerimine ei õnnestunud")}
-};
-</script>
-
 </body>
 </html>
