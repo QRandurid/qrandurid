@@ -2,105 +2,128 @@
 <html lang="et">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>TLL//HIDDEN</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <style>
-*{box-sizing:border-box}body{margin:0;background:#090b10;color:#f4f6f8;font-family:Arial,sans-serif}
-.wrap{max-width:900px;margin:auto;padding:18px}.top{display:flex;justify-content:space-between;align-items:center}
-.logo{font-weight:900;letter-spacing:2px;font-size:24px}.xp{font-weight:800}
-.hero{margin:18px 0;padding:24px;border:1px solid #252a35;border-radius:22px;background:linear-gradient(135deg,#111722,#0d1017)}
-h1{margin:0 0 8px;font-size:34px}.muted{color:#9da6b3}.stats{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
-.stat{background:#171c25;border:1px solid #2a303b;padding:10px 14px;border-radius:12px}
-#map{height:420px;border-radius:20px;margin:18px 0;border:1px solid #292f3a;overflow:hidden}
-.places{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
-.place{padding:16px;border-radius:18px;background:#11151d;border:1px solid #272d38}
-.place.locked{opacity:.45}.place h3{margin:0 0 7px}.tag{font-size:12px;font-weight:900;letter-spacing:1px}.rare{color:#64b5ff}.epic{color:#c184ff}.legendary{color:#ffd35a}
-button{width:100%;padding:14px;border:0;border-radius:13px;background:#f4f6f8;color:#090b10;font-weight:900;cursor:pointer;margin-top:10px}
-.overlay{position:fixed;inset:0;background:rgba(4,6,10,.88);display:none;align-items:center;justify-content:center;z-index:9999;padding:24px}
-.overlay.show{display:flex}.unlock{max-width:520px;width:100%;text-align:center;padding:35px 25px;border-radius:28px;background:#10151e;border:1px solid #39404c;box-shadow:0 0 70px rgba(255,255,255,.08);animation:pop .55s ease}
-.big{font-size:55px;animation:pulse 1.1s infinite}.new{font-size:13px;letter-spacing:4px;font-weight:900;margin-top:8px}.placeName{font-size:36px;font-weight:900;margin:12px 0}.reward{font-size:20px;font-weight:900}
-@keyframes pop{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}@keyframes pulse{50%{transform:scale(1.18)}}
-.legend{font-size:13px;color:#9da6b3;margin-top:8px}
+*{box-sizing:border-box}body{margin:0;background:#080a0f;color:#f4f6f8;font-family:Arial,sans-serif}.wrap{max-width:900px;margin:auto;padding:18px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px}.logo{font-weight:900;letter-spacing:2px;font-size:24px}.xpbox{font-weight:900;background:#171c25;border:1px solid #303744;padding:10px 14px;border-radius:13px}
+.hero{margin:18px 0;padding:24px;border:1px solid #252a35;border-radius:22px;background:linear-gradient(135deg,#121925,#0d1017)}
+h1{margin:0 0 8px;font-size:34px}.muted{color:#9da6b3}.stats{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}.stat{background:#171c25;border:1px solid #2a303b;padding:10px 14px;border-radius:12px}
+#map{height:430px;border-radius:20px;margin:18px 0;border:1px solid #292f3a;overflow:hidden}.places{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.place{padding:17px;border-radius:18px;background:#11151d;border:1px solid #272d38}.locked{opacity:.45}.tag{font-size:12px;font-weight:900;letter-spacing:1px}.rare{color:#64b5ff}.epic{color:#c184ff}.legendary{color:#ffd35a}
+.place h3{margin:7px 0}.distance{font-size:18px;font-weight:900;margin-top:14px}.status{margin-top:7px;font-size:13px;color:#9da6b3}
+button{width:100%;padding:14px;border:0;border-radius:13px;background:#f4f6f8;color:#090b10;font-weight:900;cursor:pointer;margin-top:11px}button.secondary{background:#202631;color:#fff;border:1px solid #343b48}
+.overlay{position:fixed;inset:0;background:rgba(4,6,10,.9);display:none;align-items:center;justify-content:center;z-index:9999;padding:24px}.overlay.show{display:flex}
+.unlock{max-width:520px;width:100%;text-align:center;padding:38px 25px;border-radius:28px;background:#10151e;border:1px solid #39404c;box-shadow:0 0 80px rgba(255,255,255,.1);animation:pop .55s ease}
+.big{font-size:62px;animation:pulse 1s infinite}.new{font-size:13px;letter-spacing:4px;font-weight:900}.placeName{font-size:36px;font-weight:900;margin:12px 0}.reward{font-size:23px;font-weight:900}.small{font-size:13px;color:#9da6b3;margin-top:8px}
+@keyframes pop{from{transform:scale(.65);opacity:0}to{transform:scale(1);opacity:1}}@keyframes pulse{50%{transform:scale(1.2)}}
 </style>
 </head>
 <body>
 <div class="wrap">
- <div class="top"><div class="logo">TLL//HIDDEN</div><div class="xp" id="xp">0 XP</div></div>
- <div class="hero">
-  <div class="muted">CITY HUNT • TALLINN</div>
-  <h1>Unlock the city.</h1>
-  <div class="muted">Skanni füüsilise kaardi QR-kood. Uus koht avaneb sinu kaardil.</div>
-  <div class="stats">
-   <div class="stat">LEVEL <b id="level">1</b></div>
-   <div class="stat">UNLOCKED <b id="count">0/3</b></div>
-  </div>
- </div>
- <div id="map"></div>
- <div class="places" id="places"></div>
+<div class="top"><div class="logo">TLL//HIDDEN</div><div class="xpbox">⚡ <span id="xp">0</span> XP</div></div>
+<div class="hero">
+<div class="muted">CITY HUNT • TALLINN</div><h1>Unlock the city.</h1>
+<div class="muted">Skänni füüsilise kaardi QR, mine märgitud kohta ja kogu XP.</div>
+<div class="stats"><div class="stat">LEVEL <b id="level">1</b></div><div class="stat">UNLOCKED <b id="count">0/3</b></div></div>
+</div>
+<div id="map"></div>
+<div class="places" id="places"></div>
 </div>
 
-<div class="overlay" id="overlay">
- <div class="unlock">
-  <div class="big">✦</div>
-  <div class="new">NEW PLACE UNLOCKED</div>
-  <div class="placeName" id="unlockName"></div>
-  <div class="reward" id="unlockReward"></div>
-  <div class="legend" id="unlockText"></div>
-  <button onclick="closeUnlock()">VIEW ON MAP</button>
- </div>
-</div>
+<div class="overlay" id="overlay"><div class="unlock">
+<div class="big">⚡</div><div class="new">XP REWARD UNLOCKED</div>
+<div class="placeName" id="unlockName"></div><div class="reward" id="unlockReward"></div>
+<div class="small">Sa jõudsid sihtkoha 50 m raadiusesse.</div>
+<button onclick="closeUnlock()">CONTINUE</button>
+</div></div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 const places={
  oldtown:{name:"VANALINN",rarity:"RARE",xp:100,lat:59.4370,lng:24.7453,desc:"Tallinna vanalinna ajalooline süda."},
  pirita:{name:"PIRITA RAND",rarity:"EPIC",xp:250,lat:59.4695,lng:24.8327,desc:"Mereäärne koht Pirita rannas."},
- viru:{name:"VIRU KESKUS",rarity:"LEGENDARY",xp:500,lat:59.4350,lng:24.7536,desc:"Üks Tallinna kõige tuntumaid keskseid kohti."}
+ viru:{name:"VIRU KESKUS",rarity:"LEGENDARY",xp:500,lat:59.4350,lng:24.7536,desc:"Tallinna keskne tuntud koht."}
 };
 const params=new URLSearchParams(location.search);
 const incoming=params.get("place");
-let unlocked=JSON.parse(localStorage.getItem("tll_unlocked")||"[]");
-let totalXP=Number(localStorage.getItem("tll_xp")||0);
-
-const map=L.map("map").setView([59.437,24.753],13);
+let state=JSON.parse(localStorage.getItem("tll_state_v06")||'{"scanned":[],"claimed":[],"xp":0}');
+let watchId=null,activeId=null;
+const map=L.map("map").setView([59.437,24.77],13);
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{attribution:"© OpenStreetMap"}).addTo(map);
 const markers={};
 
+function distance(a,b){
+ const R=6371000,rad=Math.PI/180,dLat=(b.lat-a.lat)*rad,dLon=(b.lng-a.lng)*rad;
+ const x=Math.sin(dLat/2)**2+Math.cos(a.lat*rad)*Math.cos(b.lat*rad)*Math.sin(dLon/2)**2;
+ return Math.round(2*R*Math.asin(Math.sqrt(x)));
+}
+function save(){localStorage.setItem("tll_state_v06",JSON.stringify(state))}
 function render(){
- document.getElementById("xp").textContent=totalXP+" XP";
- document.getElementById("level").textContent=Math.floor(totalXP/250)+1;
- document.getElementById("count").textContent=unlocked.length+"/3";
- const box=document.getElementById("places"); box.innerHTML="";
+ document.getElementById("xp").textContent=state.xp;
+ document.getElementById("level").textContent=Math.floor(state.xp/250)+1;
+ document.getElementById("count").textContent=state.scanned.length+"/3";
+ const box=document.getElementById("places");box.innerHTML="";
  Object.entries(places).forEach(([id,p])=>{
-   const on=unlocked.includes(id);
-   const d=document.createElement("div"); d.className="place"+(on?"":" locked");
-   d.innerHTML=`<div class="tag ${p.rarity.toLowerCase()}">${on?p.rarity:"LOCKED"}</div>
-   <h3>${on?p.name:"??????"}</h3><div class="muted">${on?p.desc:"Skanni kaart, et avada."}</div>
-   ${on?`<div style="margin-top:12px"><b>+${p.xp} XP</b></div>`:""}`;
-   box.appendChild(d);
-   if(on && !markers[id]) markers[id]=L.marker([p.lat,p.lng]).addTo(map).bindPopup("<b>"+p.name+"</b><br>"+p.rarity+" • +"+p.xp+" XP");
+  const scanned=state.scanned.includes(id),claimed=state.claimed.includes(id);
+  const d=document.createElement("div");d.className="place"+(scanned?"":" locked");
+  d.innerHTML=`<div class="tag ${p.rarity.toLowerCase()}">${scanned?p.rarity:"LOCKED"}</div>
+  <h3>${scanned?p.name:"??????"}</h3><div class="muted">${scanned?p.desc:"Skänni õige QR-kood."}</div>
+  ${scanned?`<div class="distance" id="dist-${id}">Asukoht kontrollimata</div>
+  <div class="status" id="status-${id}">${claimed?"✓ XP KÄES":"Mine sihtkohta ja kontrolli asukohta."}</div>
+  ${claimed?"":`<button class="secondary" onclick="checkLocation('${id}')">📍 KONTROLLI OMA ASUKOHTA</button>`}`:""};
+  box.appendChild(d);
+  if(scanned && !markers[id]){
+   markers[id]=L.marker([p.lat,p.lng]).addTo(map).bindPopup("<b>"+p.name+"</b><br>"+p.rarity+" • +"+p.xp+" XP");
+  }
  });
 }
-function unlock(id){
- if(!places[id]) return;
- if(!unlocked.includes(id)){
-   unlocked.push(id); totalXP+=places[id].xp;
-   localStorage.setItem("tll_unlocked",JSON.stringify(unlocked));
-   localStorage.setItem("tll_xp",totalXP);
-   document.getElementById("unlockName").textContent=places[id].name;
-   document.getElementById("unlockReward").textContent=places[id].rarity+"  •  +"+places[id].xp+" XP";
-   document.getElementById("unlockText").textContent="Koht on nüüd sinu kaardil avatud.";
-   document.getElementById("overlay").classList.add("show");
-   render();
-   setTimeout(()=>{map.setView([places[id].lat,places[id].lng],15);},500);
- } else {
-   map.setView([places[id].lat,places[id].lng],15);
+function scanPlace(id){
+ if(!places[id])return;
+ if(!state.scanned.includes(id)){
+  state.scanned.push(id);save();render();
+  document.getElementById("unlockName").textContent=places[id].name;
+  document.getElementById("unlockReward").textContent="PLACE UNLOCKED • "+places[id].rarity;
+  document.querySelector(".overlay").classList.add("show");
+  setTimeout(()=>map.setView([places[id].lat,places[id].lng],15),300);
  }
 }
-function closeUnlock(){document.getElementById("overlay").classList.remove("show");}
+function checkLocation(id){
+ activeId=id;
+ if(!navigator.geolocation){
+  alert("Sinu brauser ei toeta GPS-i.");return;
+ }
+ document.getElementById("status-"+id).textContent="GPS-i otsimine...";
+ navigator.geolocation.getCurrentPosition(pos=>handlePosition(id,pos),err=>{
+   document.getElementById("status-"+id).textContent="GPS ei ole saadaval. Kontrolli asukohaõigust.";
+ },{enableHighAccuracy:true,timeout:15000,maximumAge:0});
+}
+function handlePosition(id,pos){
+ const here={lat:pos.coords.latitude,lng:pos.coords.longitude};
+ const p=places[id],d=distance(here,p);
+ const el=document.getElementById("dist-"+id);
+ const st=document.getElementById("status-"+id);
+ el.textContent="📍 "+d+" m sihtkohast";
+ if(d<=50){
+   st.textContent="✓ SIHTKOHT LEITUD";
+   claimXP(id);
+ }else{
+   st.textContent="❌ Liiga kaugel — vaja olla 50 m raadiuses.";
+ }
+}
+function claimXP(id){
+ if(state.claimed.includes(id))return;
+ state.claimed.push(id);state.xp+=places[id].xp;save();render();
+ document.getElementById("unlockName").textContent=places[id].name;
+ document.getElementById("unlockReward").textContent="+"+places[id].xp+" XP";
+ document.querySelector(".small").textContent="Koht kinnitatud. XP lisati sinu kontole!";
+ document.querySelector(".overlay").classList.add("show");
+ map.setView([places[id].lat,places[id].lng],16);
+}
+function closeUnlock(){document.querySelector(".overlay").classList.remove("show")}
 render();
-if(incoming) setTimeout(()=>unlock(incoming.toLowerCase()),350);
+if(incoming) setTimeout(()=>scanPlace(incoming.toLowerCase()),400);
 </script>
 </body>
 </html>
