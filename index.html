@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>TLL//HIDDEN</title>
+<title>QRändurid</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <style>
 *{box-sizing:border-box}body{margin:0;background:#07090d;color:#f2f4f7;font-family:Arial,Helvetica,sans-serif}
 .top{height:64px;border-bottom:1px solid #252a33;background:#0b0e13;display:flex;align-items:center;justify-content:space-between;padding:0 18px;position:sticky;top:0;z-index:1000}
-.logo{font-weight:900;letter-spacing:2px;font-size:20px}.logo span{color:#777}.stats{display:flex;gap:14px;align-items:center}.xp{font-weight:800;color:#d9ff3f}.ver{font-size:11px;color:#69717e;border:1px solid #303640;padding:5px 7px;border-radius:5px}
+.logo{font-weight:900;font-size:24px;display:inline-flex;align-items:baseline;line-height:1;user-select:none;letter-spacing:-.8px;position:relative;padding:2px 0 5px}.logo .qr{color:#d9ff3f;font-weight:950;letter-spacing:-1.5px;text-shadow:0 0 14px rgba(217,255,63,.22)}.logo .rest{color:#f2f4f7;font-weight:850;letter-spacing:-.45px}.logo:after{content:"";position:absolute;left:0;bottom:0;width:36px;height:2px;border-radius:99px;background:#d9ff3f;box-shadow:0 0 10px rgba(217,255,63,.22)}.stats{display:flex;gap:14px;align-items:center}.xp{font-weight:800;color:#d9ff3f}.ver{font-size:11px;color:#69717e;border:1px solid #303640;padding:5px 7px;border-radius:5px}
 .wrap{max-width:1100px;margin:auto;padding:18px}
 .hero{border:1px solid #252a33;background:linear-gradient(135deg,#0d1118,#090b10);padding:18px;border-radius:12px;margin-bottom:16px}
 .hero h1{margin:0 0 7px;font-size:28px}.hero p{margin:0;color:#89919d}
@@ -24,7 +24,7 @@
 </style>
 </head>
 <body>
-<header class="top"><div class="logo">TLL<span>//</span>HIDDEN</div><div class="stats"><div class="xp" id="xpTop">0 XP</div><div class="ver">VERSION 0.8</div></div></header>
+<header class="top"><div class="logo" aria-label="QRändurid"><span class="qr">QR</span><span class="rest">ändurid</span></div><div class="stats"><div class="xp" id="xpTop">0 XP</div><div class="ver">VERSION 0.8</div></div></header>
 
 <main class="wrap">
 <section class="hero"><h1>HIDDEN CITY. REAL REWARDS.</h1><p>Leia füüsilised kaardid, ava asukohad ja kogu XP Tallinnas.</p></section>
