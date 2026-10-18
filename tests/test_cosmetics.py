@@ -59,9 +59,9 @@ class CosmeticsTests(unittest.TestCase):
 
     def test_catalog_images_filters_and_keyboard_tabs(self):
         page = self.page
-        self.assertEqual(page.locator('#skinsGrid button').count(), 24)
+        self.assertEqual(page.locator('#skinsGrid button').count(), 32)
         page.wait_for_function("[...document.querySelectorAll('#skinsGrid img')].every(i=>i.complete&&i.naturalWidth>0)")
-        self.assertEqual(page.locator('#skinsGrid img').count(), 24)
+        self.assertEqual(page.locator('#skinsGrid .skinArt').count(), 32)
         page.locator('#skinSearch').fill('draakon')
         self.assertEqual(page.locator('#skinsGrid button').count(), 1)
         page.locator('#skinSearch').fill('')
@@ -69,10 +69,10 @@ class CosmeticsTests(unittest.TestCase):
         page.keyboard.press('ArrowRight')
         self.assertTrue(page.locator('#framePanel').is_visible())
         self.assertTrue(page.locator('#skinPanel').is_hidden())
-        self.assertEqual(page.locator('#framesGrid button').count(), 12)
+        self.assertEqual(page.locator('#framesGrid button').count(), 24)
         page.wait_for_function("[...document.querySelectorAll('#framesGrid img')].every(i=>i.complete&&i.naturalWidth>0)")
         page.locator('#frameRarity').select_option('LEGENDARY')
-        self.assertEqual(page.locator('#framesGrid button').count(), 3)
+        self.assertEqual(page.locator('#framesGrid button').count(), 5)
         page.locator('#frameSearch').fill('puudub')
         self.assertTrue(page.locator('#framesGrid .emptyState').is_visible())
         for width in (320, 390, 1280):
@@ -186,26 +186,26 @@ class CosmeticsTests(unittest.TestCase):
         self.page.evaluate('(data)=>localStorage.setItem(KEY,JSON.stringify(data))', saved)
         self.page.reload(wait_until='networkidle')
         self.assertEqual(self.page.evaluate('[state.totalXp,state.equippedSkin,state.equippedSong,state.claimed.length]'), [4321, 's10', 'm2', 1])
-        self.assertEqual(self.page.evaluate('state.frames'), ['f1', 'f2'])
+        self.assertEqual(self.page.evaluate('state.frames'), ['f1', 'f2', 'f14'])
         saved.update(frames=['f2', 'f2', 'invalid'], equippedFrame='f12')
         self.page.evaluate('(data)=>localStorage.setItem(KEY,JSON.stringify(data))', saved)
         self.page.reload(wait_until='networkidle')
-        self.assertEqual(self.page.evaluate('state.frames'), ['f2'])
+        self.assertEqual(self.page.evaluate('state.frames'), ['f2', 'f14'])
         self.assertEqual(self.page.evaluate('state.equippedFrame'), 'f2')
 
     def test_all_cosmetics_available_offline_after_install(self):
         page = self.page
         page.evaluate('navigator.serviceWorker.ready')
         page.wait_for_function('!!navigator.serviceWorker.controller')
-        cached = page.evaluate("caches.open('qrandurid-demo-social-v11-secret-50').then(async cache=>(await cache.keys()).map(r=>r.url))")
-        self.assertEqual(len([url for url in cached if '/art/' in url]), 36)
+        cached = page.evaluate("caches.open('qrandurid-demo-social-v12-urban-wardrobe').then(async cache=>(await cache.keys()).map(r=>r.url))")
+        self.assertEqual(len([url for url in cached if '/art/' in url]), 49)
         self.context.set_offline(True)
         page.reload(wait_until='load')
         page.locator('.nav button').nth(3).click()
         page.wait_for_function("[...document.querySelectorAll('#skinsGrid img')].every(i=>i.complete&&i.naturalWidth>0)")
         page.locator('#frameTab').click()
         page.wait_for_function("[...document.querySelectorAll('#framesGrid img')].every(i=>i.complete&&i.naturalWidth>0)")
-        self.assertEqual(page.locator('#framesGrid button').count(), 12)
+        self.assertEqual(page.locator('#framesGrid button').count(), 24)
 
 
 if __name__ == '__main__':

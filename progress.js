@@ -21,6 +21,7 @@ function normalizeProgress(input) {
   }
   result.spotifyDemoV1 = true;
   result.musicMuted = source.musicMuted === true;
+  awardVisitCosmetics(result);
   return result;
 }
 function mergeProgress(cloud, local, preferLocal = true) {

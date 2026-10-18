@@ -271,6 +271,15 @@ class AccountsTests(unittest.TestCase):
         self.assertEqual(saved['scanned'], ['oldtown'])
         self.assertEqual(saved['claimed'], [])
 
+    def test_earned_new_cosmetics_sync_to_a_second_device(self):
+        self.login(self.page)
+        self.page.evaluate("state.claimed=['oldtown','viru','telliskivi'];state.scanned=[...state.claimed];save();equipSkin('s25');equipFrame('f13');Accounts.sync()")
+        self.page.wait_for_function("Accounts.status==='Pilve salvestatud ✓'&&!Accounts.syncing")
+        _, second = self.device()
+        self.login(second)
+        self.assertEqual(second.evaluate('[state.equippedSkin,state.equippedFrame]'), ['s25', 'f13'])
+        self.assertTrue(second.evaluate("state.frames.includes('f14')&&state.skins.includes('s25')"))
+
     def test_progress_merge_and_all_new_destinations(self):
         page = self.page
         self.assertEqual(page.evaluate('placeCount'), 50)
