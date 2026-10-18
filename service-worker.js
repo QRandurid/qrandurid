@@ -1,4 +1,4 @@
-const CACHE_NAME = 'qrandurid-demo-social-v10-duplicate-cards';
+const CACHE_NAME = 'qrandurid-demo-social-v11-secret-50';
 const CACHE_PREFIX = 'qrandurid-demo-social-';
 const APP_SHELL = ['./', './index.html', './styles.css', './favicon.svg', './manifest.json', './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png', './cosmetics.js', './cosmetics.css', './places.js', './progress.js', './account.css', './account.js', './account-config.js', './vendor/supabase-2.118.0.js', ...Array.from({length:24},(_,i)=>`./art/s${i+1}.svg`), ...Array.from({length:12},(_,i)=>`./art/f${i+1}.svg`)];
 self.addEventListener('install', event => {

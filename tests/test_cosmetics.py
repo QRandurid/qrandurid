@@ -172,7 +172,7 @@ class CosmeticsTests(unittest.TestCase):
         before = page.evaluate('state.totalXp')
         page.evaluate("() => {const random=Math.random;try{Math.random=()=>0;demoScan()}finally{Math.random=random}}")
         self.assertEqual(page.evaluate('state.totalXp'), before+200)
-        self.assertEqual(page.evaluate('state.scanned.length'), 30)
+        self.assertEqual(page.evaluate('state.scanned.length'), 50)
         self.assertTrue(page.locator('.duplicateCardReward').is_visible())
         before = page.evaluate('state.totalXp')
         page.evaluate("scanPlace('invalid');scanPlace('constructor')")
@@ -197,7 +197,7 @@ class CosmeticsTests(unittest.TestCase):
         page = self.page
         page.evaluate('navigator.serviceWorker.ready')
         page.wait_for_function('!!navigator.serviceWorker.controller')
-        cached = page.evaluate("caches.open('qrandurid-demo-social-v10-duplicate-cards').then(async cache=>(await cache.keys()).map(r=>r.url))")
+        cached = page.evaluate("caches.open('qrandurid-demo-social-v11-secret-50').then(async cache=>(await cache.keys()).map(r=>r.url))")
         self.assertEqual(len([url for url in cached if '/art/' in url]), 36)
         self.context.set_offline(True)
         page.reload(wait_until='load')

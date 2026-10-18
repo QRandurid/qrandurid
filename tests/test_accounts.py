@@ -273,7 +273,7 @@ class AccountsTests(unittest.TestCase):
 
     def test_progress_merge_and_all_new_destinations(self):
         page = self.page
-        self.assertEqual(page.evaluate('placeCount'), 30)
+        self.assertEqual(page.evaluate('placeCount'), 50)
         page.evaluate("navTo('mapSec',document.querySelector('.nav button'))")
         page.locator('#placeSearch').fill('ülemiste')
         self.assertEqual(page.locator('#discoverGrid button').count(), 1)
