@@ -43,7 +43,7 @@
 
 <section id="cardsSec" class="section">
 <div class="sectionTitle"><h2>Minu kaardid</h2><span id="cardsCount"></span></div>
-<div id="cardCollection" class="cards"></div>
+<div class="notice cardDuplicateHint">Duplikaatkaart = <strong>2× kaardi XP</strong>. Näiteks 100 XP kaardi kordus annab kohe 200 XP. Kohapealse külastuse XP saad eraldi.</div><div id="cardCollection" class="cards"></div>
 </section>
 
 <section id="skinsSec" class="section">
@@ -126,8 +126,20 @@ function poolFor(r){const type=['skin','song','frame'][Math.floor(Math.random()*
 function grantOne(){const r=rollRarity();const {type,item}=poolFor(r);const arr={skin:state.skins,song:state.songs,frame:state.frames}[type];const duplicate=arr.includes(item.id);if(duplicate){const bonus=rarityXp[r];addXp(bonus);return {type,item,duplicate,bonus}}arr.push(item.id);return {type,item,duplicate:false,bonus:0}}
 function grantRewards(){const rewards=[grantOne()];if(Math.random()<.10)rewards.push(grantOne());save();showRewards(rewards)}
 function showRewards(rs){const html=rs.map((r,i)=>`<div class="rewardCard"><div class="rewardIcon">${r.type==='skin'?skinArt(r.item):r.type==='frame'?avatarArt(currentSkin(),r.item):'🎵'}</div><span class="pill ${rarityClass(r.item.rarity)}">${r.item.rarity}</span><h2>${r.type==='song'?r.item.title:r.item.name}</h2><p>${r.type==='song'?r.item.artist:r.type==='frame'?'PROFIILIRAAM':'PROFIILISKIN'}</p>${r.duplicate?`<p style="color:var(--lime);font-weight:900">KORDUS → +${r.bonus} XP</p>`:'<p>Uus leid lisati sinu kollektsiooni.</p>'}</div>`).join('<hr style="border:0;border-top:1px solid var(--line)">');openSheet(`<div style="text-align:center"><div class="tag rare">QR-PREEMIA${rs.length>1?' • TOPELTLEID!':''}</div></div>${html}`)}
-function scanPlace(id){const p=places[id];if(!p)return;activePlace=id;if(!state.scanned.includes(id)){state.scanned.push(id);save();grantRewards()}else notify('See kaart on juba avatud. Mine kohale ja kogu XP-d!');focusPlace(id)}
-function demoScan(){const locked=Object.keys(places).filter(id=>!state.scanned.includes(id));if(!locked.length){notify('Kõik Tallinna kohad on avatud! Kogu nüüd kohapeal XP-d.');return}scanPlace(locked[0])}
+function scanPlace(id){
+  if(!Object.hasOwn(places,id))return;
+  const p=places[id];
+  activePlace=id;
+  if(!state.scanned.includes(id)){
+    state.scanned.push(id);save();grantRewards();
+  }else{
+    const bonus=p.xp*2;
+    addXp(bonus);save();
+    openSheet(`<div class="rewardCard duplicateCardReward"><span class="pill ${p.cls}">DUPLIKAATKAART</span><div class="doubleXpBadge">2× XP</div><h2>+${bonus} XP</h2><p><strong>${p.name}</strong></p><p>See kaart on sul juba olemas!<br>${p.xp} XP × 2 = <strong>${bonus} XP</strong></p></div>`);
+  }
+  focusPlace(id);
+}
+function demoScan(){const ids=Object.keys(places);scanPlace(ids[Math.floor(Math.random()*ids.length)])}
 function focusPlace(id){activePlace=id;if(map)map.setView([places[id].lat,places[id].lng],15);renderPlaces();setLocationStatus(state.claimed.includes(id)?'Selle koha XP on juba kogutud.':'Valitud: '+places[id].name+' · +'+places[id].xp+' XP kuni 50 m kaugusel.');}
 let locationPending=false;
 function setLocationStatus(message,type=''){const el=document.getElementById('locationStatus');el.textContent=message;el.className='notice'+(type?' '+type:'')}

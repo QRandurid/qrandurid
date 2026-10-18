@@ -261,6 +261,16 @@ class AccountsTests(unittest.TestCase):
         self.assertEqual(self.provider.users['one@example.test'][1], 'replacement-password-789')
         self.assertNotIn('replacement-password-789', page.evaluate('JSON.stringify({...localStorage})'))
 
+    def test_duplicate_card_bonus_is_saved_to_the_account(self):
+        self.login(self.page)
+        before = self.page.evaluate('state.totalXp')
+        self.page.evaluate("scanPlace('oldtown');closeSheet();Accounts.sync()")
+        self.page.wait_for_function("Accounts.status==='Pilve salvestatud ✓'&&!Accounts.syncing")
+        saved = self.provider.rows[self.provider.users['one@example.test'][0]]['progress']
+        self.assertEqual(saved['totalXp'], before+200)
+        self.assertEqual(saved['scanned'], ['oldtown'])
+        self.assertEqual(saved['claimed'], [])
+
     def test_progress_merge_and_all_new_destinations(self):
         page = self.page
         self.assertEqual(page.evaluate('placeCount'), 30)

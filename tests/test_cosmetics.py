@@ -141,6 +141,43 @@ class CosmeticsTests(unittest.TestCase):
         page.locator('#sheetContent .btn').click()
         self.assertEqual(page.evaluate('state.equippedFrame'), 'f12')
 
+    def test_duplicate_place_card_awards_double_xp_and_persists(self):
+        page = self.page
+        page.evaluate("scanPlace('oldtown')")
+        self.assertEqual(page.evaluate('[state.totalXp,state.weeklyXp]'), [1060, 540])
+        self.assertEqual(page.evaluate('state.scanned'), ['oldtown'])
+        self.assertEqual(page.evaluate('state.claimed'), [])
+        self.assertIn('+200 XP', page.locator('#sheetContent h2').inner_text())
+        self.assertIn('2× XP', page.locator('.doubleXpBadge').inner_text())
+        page.reload(wait_until='networkidle')
+        self.assertEqual(page.evaluate('[state.totalXp,state.weeklyXp,state.scanned.length]'), [1060, 540, 1])
+
+    def test_duplicate_card_keeps_visit_xp_separate_and_demo_can_draw_duplicates(self):
+        page = self.page
+        self.context.grant_permissions(['geolocation'])
+        self.context.set_geolocation({'latitude': 59.4350, 'longitude': 24.7536})
+        page.evaluate("scanPlace('viru');closeSheet()")
+        before = page.evaluate('[state.totalXp,state.weeklyXp]')
+        page.evaluate("scanPlace('viru');closeSheet()")
+        self.assertEqual(page.evaluate('[state.totalXp,state.weeklyXp]'), [before[0]+1000, before[1]+1000])
+        self.assertEqual(page.evaluate('state.claimed'), [])
+        page.evaluate('checkLocation()')
+        page.wait_for_function("state.claimed.includes('viru')")
+        self.assertEqual(page.evaluate('state.totalXp'), before[0]+1500)
+        page.keyboard.press('Escape')
+        page.evaluate('checkLocation()')
+        self.assertEqual(page.evaluate('state.totalXp'), before[0]+1500)
+        # All cards collected: a demo draw still yields a real duplicate reward.
+        page.evaluate("state.scanned=Object.keys(places);save()")
+        before = page.evaluate('state.totalXp')
+        page.evaluate("() => {const random=Math.random;try{Math.random=()=>0;demoScan()}finally{Math.random=random}}")
+        self.assertEqual(page.evaluate('state.totalXp'), before+200)
+        self.assertEqual(page.evaluate('state.scanned.length'), 30)
+        self.assertTrue(page.locator('.duplicateCardReward').is_visible())
+        before = page.evaluate('state.totalXp')
+        page.evaluate("scanPlace('invalid');scanPlace('constructor')")
+        self.assertEqual(page.evaluate('state.totalXp'), before)
+
     def test_legacy_save_migrates_and_invalid_frame_is_sanitized(self):
         saved = dict(username='Vana mängija', totalXp=4321, weeklyXp=789,
                      scanned=['oldtown', 'pirita'], claimed=['oldtown'],
@@ -160,7 +197,7 @@ class CosmeticsTests(unittest.TestCase):
         page = self.page
         page.evaluate('navigator.serviceWorker.ready')
         page.wait_for_function('!!navigator.serviceWorker.controller')
-        cached = page.evaluate("caches.open('qrandurid-demo-social-v9-accounts-connected').then(async cache=>(await cache.keys()).map(r=>r.url))")
+        cached = page.evaluate("caches.open('qrandurid-demo-social-v10-duplicate-cards').then(async cache=>(await cache.keys()).map(r=>r.url))")
         self.assertEqual(len([url for url in cached if '/art/' in url]), 36)
         self.context.set_offline(True)
         page.reload(wait_until='load')
