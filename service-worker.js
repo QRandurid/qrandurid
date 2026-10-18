@@ -1,6 +1,6 @@
-const CACHE_NAME = 'qrandurid-demo-social-v6-explore';
+const CACHE_NAME = 'qrandurid-demo-social-v7-cosmetics';
 const CACHE_PREFIX = 'qrandurid-demo-social-';
-const APP_SHELL = ['./', './index.html', './styles.css', './favicon.svg', './manifest.json', './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png'];
+const APP_SHELL = ['./', './index.html', './styles.css', './favicon.svg', './manifest.json', './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png', './cosmetics.js', './cosmetics.css', ...Array.from({length:24},(_,i)=>`./art/s${i+1}.svg`), ...Array.from({length:12},(_,i)=>`./art/f${i+1}.svg`)];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(APP_SHELL)).then(() => self.skipWaiting()));
 });
