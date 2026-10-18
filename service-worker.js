@@ -1,4 +1,4 @@
-const CACHE_NAME = 'qrandurid-demo-social-v5-brand';
+const CACHE_NAME = 'qrandurid-demo-social-v6-explore';
 const CACHE_PREFIX = 'qrandurid-demo-social-';
 const APP_SHELL = ['./', './index.html', './styles.css', './favicon.svg', './manifest.json', './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png'];
 self.addEventListener('install', event => {
