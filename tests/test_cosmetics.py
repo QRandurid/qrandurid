@@ -197,7 +197,7 @@ class CosmeticsTests(unittest.TestCase):
         page = self.page
         page.evaluate('navigator.serviceWorker.ready')
         page.wait_for_function('!!navigator.serviceWorker.controller')
-        cached = page.evaluate("caches.open('qrandurid-demo-social-v12-urban-wardrobe').then(async cache=>(await cache.keys()).map(r=>r.url))")
+        cached = page.evaluate("caches.open('qrandurid-demo-social-v13-mascot-skins').then(async cache=>(await cache.keys()).map(r=>r.url))")
         self.assertEqual(len([url for url in cached if '/art/' in url]), 49)
         self.context.set_offline(True)
         page.reload(wait_until='load')
